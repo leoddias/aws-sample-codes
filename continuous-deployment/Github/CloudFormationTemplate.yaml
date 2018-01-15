@@ -1,0 +1,76 @@
+Description: >
+  Template baseado na referencia e adaptado ao meu cenario
+  utilizando github para armazenamento/versionamento.
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Nome do Cluster
+
+  GitHubUser:
+    Type: String
+    Description: Usuario do GitHub.
+
+  GitHubRepo:
+    Type: String
+    Default: ecs-demo-php-simple-app
+    Description: Repositorio da solucao.
+
+  GitHubBranch:
+    Type: String
+    Default: master
+    Description: Branch utilizada para continuous deployment.
+
+  GitHubToken:
+    Type: String
+    Description: >
+      Gere um token em. (https://github.com/settings/tokens)
+
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterLabels:
+      GitHubUser:
+        default: "User"
+      GitHubRepo:
+        default: "Repo"
+      GitHubBranch:
+        default: "Branch"
+      GitHubToken:
+        default: "Personal Access Token"
+    ParameterGroups:
+      - Label:
+          default: GitHub Configuration
+        Parameters:
+          - GitHubRepo
+          - GitHubBranch
+          - GitHubUser
+          - GitHubToken
+
+
+Resources:
+  DeploymentPipeline:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://raw.githubusercontent.com/leoddias/aws-sample-codes/master/continuous-deployment/github/deployment-pipeline.yaml
+      Parameters:
+        Cluster: !Ref ClusterName
+        Service: !GetAtt Service.Outputs.ServiceName
+        GitHubUser: !Ref GitHubUser
+        GitHubToken: !Ref GitHubToken
+        GitHubRepo: !Ref GitHubRepo
+        GitHubBranch: !Ref GitHubBranch
+
+  Service:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://raw.githubusercontent.com/leoddias/aws-sample-codes/master/continuous-deployment/github/service.yaml
+      Parameters:
+        Cluster: !Ref ClusterName
+        GitHubRepo: !Ref GitHubRepo
+
+
+Outputs:
+  PipelineUrl:
+    Description: The continuous deployment pipeline in the AWS Management Console.
+    Value: !GetAtt DeploymentPipeline.Outputs.PipelineUrl
