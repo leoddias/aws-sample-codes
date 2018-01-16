@@ -43,11 +43,6 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                   - ecr:GetAuthorizationToken
-                  - codecommit:GetBranch
-                  - codecommit:GetCommit
-                  - codecommit:UploadArchive
-                  - codecommit:GetUploadArchiveStatus
-                  - codecommit:CancelUploadArchive
               - Resource: !Sub arn:aws:s3:::${ArtifactBucket}/*
                 Effect: Allow
                 Action:
@@ -93,6 +88,11 @@ Resources:
               - Resource: "*"
                 Effect: Allow
                 Action:
+                  - codecommit:GetBranch
+                  - codecommit:GetCommit
+                  - codecommit:UploadArchive
+                  - codecommit:GetUploadArchiveStatus
+                  - codecommit:CancelUploadArchive
                   - ecs:DescribeServices
                   - ecs:DescribeTaskDefinition
                   - ecs:DescribeTasks
@@ -179,7 +179,7 @@ Resources:
               Configuration:
                 ProjectName: !Ref CodeBuildProject
               InputArtifacts:
-                - Name: App
+                - Name: !Ref RepoName
               OutputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1

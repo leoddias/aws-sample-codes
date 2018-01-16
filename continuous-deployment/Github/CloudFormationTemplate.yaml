@@ -72,5 +72,5 @@ Resources:
 
 Outputs:
   PipelineUrl:
-    Description: The continuous deployment pipeline in the AWS Management Console.
+    Description: Url gerada para acesso Pipeline criado
     Value: !GetAtt DeploymentPipeline.Outputs.PipelineUrl
