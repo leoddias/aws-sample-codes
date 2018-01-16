@@ -1,0 +1,45 @@
+Parameters:
+  DesiredCount:
+    Type: Number
+    Default: 1
+
+  Cluster:
+    Type: String
+
+  RepoName:
+    Type: String
+
+
+Resources:
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: !Ref DesiredCount
+      TaskDefinition: !Ref TaskDefinition
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref RepoName
+      ContainerDefinitions:
+        - Name: aplicacao
+          Image: amazon/amazon-ecs-sample
+          EntryPoint:
+            - /usr/sbin/apache2
+            - -D
+            - FOREGROUND
+          Essential: true
+          Memory: 128
+          MountPoints:
+            - SourceVolume: my-vol
+              ContainerPath: /var/www/my-vol
+          PortMappings:
+            - ContainerPort: 80
+      Volumes:
+        - Name: my-vol
+
+
+Outputs:
+  ServiceName:
+    Value: !Ref Service

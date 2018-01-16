@@ -1,0 +1,52 @@
+Description: >
+  Template baseado na referencia e adaptado ao meu cenario
+  utilizando github para armazenamento/versionamento.
+
+Parameters:
+  ClusterName:
+    Type: String
+    Description: Nome do Cluster
+
+  RepoName:
+    Type: String
+    Description: Nome do repo CodeCommit
+
+  RepositoryBranch:
+    Type: String
+    Description: Nome da Branch (master)
+
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterLabels:
+      ClusterName:
+        default: "cluster"
+      RepoName:
+        default: "Repo"
+      RepositoryBranch:
+        default: "master"
+
+Resources:
+  DeploymentPipeline:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://raw.githubusercontent.com/leoddias/aws-sample-codes/master/continuous-deployment/github/deployment-pipeline.yaml
+      Parameters:
+        Cluster: !Ref ClusterName
+        Service: !GetAtt Service.Outputs.ServiceName
+        RepoName: !Ref RepoName
+        RepositoryBranch: !Ref RepositoryBranch
+
+  Service:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://raw.githubusercontent.com/leoddias/aws-sample-codes/master/continuous-deployment/github/service.yaml
+      Parameters:
+        Cluster: !Ref ClusterName
+        RepoName: !Ref RepoName
+
+
+Outputs:
+  PipelineUrl:
+    Description: The continuous deployment pipeline in the AWS Management Console.
+    Value: !GetAtt DeploymentPipeline.Outputs.PipelineUrl
