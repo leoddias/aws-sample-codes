@@ -10,6 +10,9 @@ Parameters:
   
   DominioAplicacao:
     Type: String
+  
+  LetsEncryptEmail:
+    Type: String
 
 Resources:
   Service:
@@ -36,7 +39,11 @@ Resources:
             - ContainerPort: 80
           Environment:
             - Name: VIRTUAL_HOST
-              Value: !Ref DominioAplicacao             
+              Value: !Ref DominioAplicacao
+            - Name: LETSENCRYPT_HOST             
+              Value: !Ref DominioAplicacao
+            - Name: LETSENCRYPT_EMAIL
+              Value: !Ref LetsEncryptEmail
 
 Outputs:
   ServiceName:
