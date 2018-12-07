@@ -123,7 +123,7 @@ Resources:
             post_build:
               commands:
                 - docker push "$IMAGE_URI"
-                - printf '[{"name":"%s","imageUri":"%s"}]' "$NAME_REPO","$IMAGE_URI" > images.json
+                - printf '[{"name":"app","imageUri":"%s"}]' "$IMAGE_URI" > images.json
           artifacts:
             files: images.json
       Environment:
@@ -133,8 +133,6 @@ Resources:
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
             Value: !Ref AWS::Region
-          - Name: NAME_REPO
-            Value: !Ref RepoName
           - Name: REPOSITORY_URI
             Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${RepoName}
       Name: !Ref AWS::StackName

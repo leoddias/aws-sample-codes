@@ -3,11 +3,11 @@ Description: >
 
 Parameters:
   ClusterName:
-    Type: List<AWS::ECS::Cluster::ClusterName>
-    Description: Selecione um Cluster 
+    Type: String
+    Description: Digite o nome do Cluster 
 
   RepoName:
-    Type: List<AWS::CodeCommit::Repository::RepositoryName>
+    Type: String
     Description: Nome do repo CodeCommit
 
   RepositoryBranch:
@@ -23,13 +23,14 @@ Parameters:
   DominioAplicacao:
     Description: Dominio da aplicacao (site.com.br)
     Type: String
-    Default: site.com.br
+    Default: site.com.br,www.site.com.br
 
 Resources:
+
   Repository:
-  Type: AWS::ECR::Repository
-  Properties:
-    RepositoryName: !Ref RepoName
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Ref RepoName
 
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack

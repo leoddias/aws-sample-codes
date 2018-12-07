@@ -24,8 +24,8 @@ Resources:
     Properties:
       Family: !Ref RepoName
       ContainerDefinitions:
-        - Name: !Ref RepoName
-          Image: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${RepoName}
+        - Name: app
+          Image: amazon/amazon-ecs-sample
           EntryPoint:
             - /usr/sbin/apache2
             - -D
