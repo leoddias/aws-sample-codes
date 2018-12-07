@@ -13,12 +13,6 @@ Parameters:
 
 
 Resources:
-  Repository:
-    Type: AWS::ECR::Repository
-    DeletionPolicy: Retain
-    Properties:
-      RepositoryName: !Ref RepoName
-
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -49,7 +43,7 @@ Resources:
                   - s3:GetObject
                   - s3:PutObject
                   - s3:GetObjectVersion
-              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${Repository}
+              - Resource: !Sub arn:aws:ecr:${AWS::Region}:${AWS::AccountId}:repository/${RepoName}
                 Effect: Allow
                 Action:
                   - ecr:GetDownloadUrlForLayer
@@ -121,7 +115,7 @@ Resources:
           phases:
             pre_build:
               commands:
-                - $(aws ecr get-login)
+                - $(aws ecr get-login --no-include-email)
                 - IMAGE_URI="${REPOSITORY_URI}:latest"
             build:
               commands:
@@ -129,18 +123,20 @@ Resources:
             post_build:
               commands:
                 - docker push "$IMAGE_URI"
-                - printf '[{"name":"aplicacao","imageUri":"%s"}]' "$IMAGE_URI" > images.json
+                - printf '[{"name":"%s","imageUri":"%s"}]' "$NAME_REPO","$IMAGE_URI" > images.json
           artifacts:
             files: images.json
       Environment:
         ComputeType: "BUILD_GENERAL1_SMALL"
-        Image: "aws/codebuild/docker:1.12.1"
+        Image: "aws/codebuild/docker:17.09.0"
         Type: "LINUX_CONTAINER"
         EnvironmentVariables:
           - Name: AWS_DEFAULT_REGION
             Value: !Ref AWS::Region
+          - Name: NAME_REPO
+            Value: !Ref RepoName
           - Name: REPOSITORY_URI
-            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repository}
+            Value: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${RepoName}
       Name: !Ref AWS::StackName
       ServiceRole: !Ref CodeBuildServiceRole
 
@@ -197,7 +193,6 @@ Resources:
               InputArtifacts:
                 - Name: BuildOutput
               RunOrder: 1
-
 
 Outputs:
   PipelineUrl:

@@ -1,32 +1,36 @@
 Description: >
-  Template baseado na referencia e adaptado ao meu cenario
-  utilizando github para armazenamento/versionamento.
+  Template utilizando CodeCommit e ECS.
 
 Parameters:
   ClusterName:
-    Type: String
-    Description: Nome do Cluster
+    Type: List<AWS::ECS::Cluster::ClusterName>
+    Description: Selecione um Cluster 
 
   RepoName:
-    Type: String
+    Type: List<AWS::CodeCommit::Repository::RepositoryName>
     Description: Nome do repo CodeCommit
 
   RepositoryBranch:
     Type: String
+    Default: master
     Description: Nome da Branch (master)
+  
+  ContainerMemory:
+    Description: Quantidade de memoria reservada para o container
+    Type: Number
+    Default: 200
 
-
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterLabels:
-      ClusterName:
-        default: "cluster"
-      RepoName:
-        default: "Repo"
-      RepositoryBranch:
-        default: "master"
+  DominioAplicacao:
+    Description: Dominio da aplicacao (site.com.br)
+    Type: String
+    Default: site.com.br
 
 Resources:
+  Repository:
+  Type: AWS::ECR::Repository
+  Properties:
+    RepositoryName: !Ref RepoName
+
   DeploymentPipeline:
     Type: AWS::CloudFormation::Stack
     Properties:
@@ -44,7 +48,8 @@ Resources:
       Parameters:
         Cluster: !Ref ClusterName
         RepoName: !Ref RepoName
-
+        ContainerMemory: !Ref ContainerMemory
+        DominioAplicacao: !Ref DominioAplicacao
 
 Outputs:
   PipelineUrl:
