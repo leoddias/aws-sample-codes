@@ -44,6 +44,15 @@ Resources:
               Value: !Ref DominioAplicacao
             - Name: LETSENCRYPT_EMAIL
               Value: !Ref LetsEncryptEmail
+          MountPoints: 
+            - 
+              ContainerPath: /var/www/html/.env
+              SourceVolume: my-vol
+      Volumes:
+       -
+        Host:
+          SourcePath: !Join ['', ['/var/envs/', !Ref DominioAplicacao, '/.env']]
+        Name: "my-vol"
 
 Outputs:
   ServiceName:
