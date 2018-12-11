@@ -1,0 +1,42 @@
+traefik.toml 
+debug = false
+
+logLevel = "ERROR"
+defaultEntryPoints = ["https","http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+
+[retry]
+
+[web]
+address = ":8080"
+readOnly = true
+[web.metrics.prometheus]
+buckets=[0.1,0.3,1.2,5.0]
+
+
+[acme]
+email = "email@seudominio.com.br"
+storage = "acme.json"
+entryPoint = "https"
+onHostRule = true
+[acme.httpChallenge]
+entryPoint = "http"
+
+[ecs]
+clusters = ["seu-cluster"]
+watch = true
+domain = "seudominio.com.br"
+autoDiscoverClusters = false
+refreshSeconds = 15
+exposedByDefault = true
+accessKeyID = "acessKey"
+secretAccessKey = "secretAccessKey"
+

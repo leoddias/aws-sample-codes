@@ -11,7 +11,7 @@ Parameters:
   DominioAplicacao:
     Type: String
   
-  LetsEncryptEmail:
+  ArquivoConfig:
     Type: String
 
 Resources:
@@ -37,21 +37,16 @@ Resources:
           Memory: !Ref ContainerMemory
           PortMappings:
             - ContainerPort: 80
-          Environment:
-            - Name: VIRTUAL_HOST
-              Value: !Ref DominioAplicacao
-            - Name: LETSENCRYPT_HOST             
-              Value: !Ref DominioAplicacao
-            - Name: LETSENCRYPT_EMAIL
-              Value: !Ref LetsEncryptEmail
+          DockerLabels:
+            traefik.frontend.rule: !Join ['', ['Host:', !Ref DominioAplicacao]]
+            traefik.port: ''
           MountPoints: 
-            - 
-              ContainerPath: /var/www/html/.env
+            - ContainerPath: !Join ['', ['/var/www/html', !Ref ArquivoConfig]]
               SourceVolume: my-vol
       Volumes:
        -
         Host:
-          SourcePath: !Join ['', ['/var/envs/', !Ref DominioAplicacao, '/.env']]
+          SourcePath: !Join ['', ['/opt/configs/', !Ref DominioAplicacao, !Ref ArquivoConfig]]
         Name: "my-vol"
 
 Outputs:

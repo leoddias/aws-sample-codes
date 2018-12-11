@@ -25,10 +25,10 @@ Parameters:
     Type: String
     Default: site.com.br,www.site.com.br
   
-  LetsEncryptEmail:
-    Description: Email para o LetsEncrypt
+  ArquivoConfig:
+    Description: Arquivo de config a ser montado na raiz /var/www/html (laravel /.env)
     Type: String
-    Default: leoddias@live.com
+    Default: /.env
 
 Resources:
 
@@ -56,7 +56,7 @@ Resources:
         RepoName: !Ref RepoName
         ContainerMemory: !Ref ContainerMemory
         DominioAplicacao: !Ref DominioAplicacao
-        LetsEncryptEmail: !Ref LetsEncryptEmail
+        ArquivoConfig: !Ref ArquivoConfig
 
 Outputs:
   PipelineUrl:
